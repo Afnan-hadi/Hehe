@@ -50,7 +50,7 @@ body{
 .active{display:flex}
 .card{
   width:100%;
-  max-width:420px;
+  max-width:500px;
   background:rgba(255,255,255,.25);
   backdrop-filter:blur(15px);
   border-radius:30px;
@@ -73,6 +73,11 @@ button{
   color:white;
   font-size:1em;
   margin:6px;
+  cursor:pointer;
+  transition:transform 0.2s;
+}
+button:hover{
+  transform:scale(1.05);
 }
 input{
   padding:14px;
@@ -86,6 +91,7 @@ input{
 .heart{
   font-size:80px;
   animation:pulse 1.2s infinite;
+  cursor:pointer;
 }
 @keyframes pulse{
   0%{transform:scale(1)}
@@ -93,28 +99,103 @@ input{
   100%{transform:scale(1)}
 }
 
-/* 🧠 MEMORY GAME */
+/* 🧠 ENHANCED MEMORY GAME */
+.game-stats{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:20px;
+  font-size:1.1em;
+  background:rgba(255,255,255,0.2);
+  padding:10px 20px;
+  border-radius:20px;
+}
+
 .game{
   display:grid;
-  grid-template-columns:repeat(2,120px);
+  grid-template-columns:repeat(4,1fr);
   gap:12px;
   justify-content:center;
+  margin:20px 0;
 }
 .cardGame{
-  height:120px;
-  background:white;
-  border-radius:20px;
-  font-size:60px;
+  height:80px;
+  background:rgba(255,255,255,0.9);
+  border-radius:15px;
+  font-size:0;
   display:flex;
   align-items:center;
   justify-content:center;
   color:#ff5f8a;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  position:relative;
+  transform-style:preserve-3d;
+}
+.cardGame.flipped{
+  font-size:40px;
+  background:white;
+  transform:rotateY(180deg);
+}
+.cardGame.matched{
+  background:#ff5f8a;
+  color:white;
+  cursor:default;
+}
+.cardGame::after{
+  content:"?";
+  position:absolute;
+  font-size:30px;
+  color:#ff5f8a;
+  transition:opacity 0.3s;
+}
+.cardGame.flipped::after,
+.cardGame.matched::after{
+  opacity:0;
+}
+
+.game-controls{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  margin-top:20px;
+}
+.difficulty-btn{
+  background:rgba(255,255,255,0.3);
+  border:2px solid white;
+}
+
+/* 🎮 GAME COMPLETION */
+.completion-animation{
+  font-size:60px;
+  animation:bounce 1s infinite;
+  margin:20px 0;
+}
+@keyframes bounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-20px)}
 }
 
 .gallery img{
   width:100%;
   border-radius:18px;
   margin-top:10px;
+  transition:transform 0.3s;
+}
+.gallery img:hover{
+  transform:scale(1.02);
+}
+
+/* 🏆 ACHIEVEMENTS */
+.achievement{
+  background:rgba(255,255,255,0.2);
+  padding:15px;
+  border-radius:15px;
+  margin:10px 0;
+  animation:slideIn 0.5s ease;
+}
+@keyframes slideIn{
+  from{transform:translateX(-20px);opacity:0}
+  to{transform:translateX(0);opacity:1}
 }
 </style>
 </head>
@@ -123,7 +204,7 @@ input{
 
 <!-- 🌸 PROGRESS -->
 <div id="progressBox">
-  <div id="progressText">Iklil has unlocked 0 / 5 sections</div>
+  <div id="progressText">Iklil has unlocked 0 / 7 sections</div>
   <div id="progressBar"><div id="progressFill"></div></div>
 </div>
 
@@ -146,8 +227,9 @@ input{
 <div class="gate" id="gate1">
   <div class="card">
     <h1>Unlock My Heart 💕</h1>
-    <p>Tap the heart 3 times, Iklil</p>
+    <p>Tap the heart 7 times, Iklil</p>
     <div class="heart" onclick="unlock1()">❤️</div>
+    <p id="tapCounter">Taps: 0/7</p>
   </div>
 </div>
 
@@ -155,7 +237,7 @@ input{
 <div class="section" id="section1">
   <div class="card">
     <h1>Hi Iklil 💖</h1>
-    <p>I made this just for you</p>
+    <p>I made this special adventure just for you</p>
     <button onclick="nextGate(2)">Continue</button>
   </div>
 </div>
@@ -164,9 +246,19 @@ input{
 <div class="gate" id="gate2">
   <div class="card">
     <h1>Find My Heart 💘</h1>
-    <button onclick="wrong()">🌸</button>
-    <button onclick="unlock2()">❤️</button>
-    <button onclick="wrong()">✨</button>
+    <p>Find the heart among the flowers (3 tries)</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0;">
+      <button onclick="tryFindHeart(1)">🌸</button>
+      <button onclick="tryFindHeart(2)">🌺</button>
+      <button onclick="tryFindHeart(3)">🌷</button>
+      <button onclick="tryFindHeart(4)">🌼</button>
+      <button onclick="tryFindHeart(5)">💮</button>
+      <button onclick="tryFindHeart(6)">🏵️</button>
+      <button onclick="tryFindHeart(7)">💐</button>
+      <button onclick="tryFindHeart(8)">🌹</button>
+      <button onclick="tryFindHeart(9)">❤️</button>
+    </div>
+    <p id="triesCounter">Tries left: 3</p>
   </div>
 </div>
 
@@ -175,6 +267,7 @@ input{
   <div class="card">
     <h1>How We Met ✨</h1>
     <p>The moment I met you, everything felt right.</p>
+    <p>It was like finding the missing piece I never knew was lost.</p>
     <button onclick="nextGate(3)">Continue</button>
   </div>
 </div>
@@ -182,10 +275,16 @@ input{
 <!-- ❓ GATE 3 -->
 <div class="gate" id="gate3">
   <div class="card">
-    <h1>Who Do I Love Most? 😏</h1>
-    <button onclick="wrong()">Sleep</button>
-    <button onclick="unlock3()">You ❤️</button>
-    <button onclick="wrong()">Food</button>
+    <h1>Love Quiz ❤️</h1>
+    <p>Answer these questions about us:</p>
+    <div id="quizContainer">
+      <div class="question">
+        <p>What's my favorite thing about you?</p>
+        <button onclick="answerQuiz(1,1)">Your smile</button>
+        <button onclick="answerQuiz(1,2)">Your kindness</button>
+        <button onclick="answerQuiz(1,3)">Your intelligence</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -196,20 +295,35 @@ input{
     <p>You feel like home.</p>
     <p>You understand me.</p>
     <p>You choose me.</p>
+    <p>You make every day special.</p>
     <button onclick="nextGate(4)">Continue</button>
   </div>
 </div>
 
-<!-- 🧠 GATE 4 -->
+<!-- 🧠 GATE 4 - ENHANCED MEMORY GAME -->
 <div class="gate" id="gate4">
   <div class="card">
-    <h1>Match Our Hearts 🧠❤️</h1>
-    <div class="game">
-      <div class="cardGame" onclick="flip(this)">?</div>
-      <div class="cardGame" onclick="flip(this)">?</div>
-      <div class="cardGame" onclick="flip(this)">?</div>
-      <div class="cardGame" onclick="flip(this)">?</div>
+    <h1>Memory Challenge 🧠❤️</h1>
+    <p>Match all pairs to unlock the next section!</p>
+    
+    <div class="game-stats">
+      <div>Moves: <span id="moveCount">0</span></div>
+      <div>Time: <span id="timer">0s</span></div>
+      <div>Pairs: <span id="matchedCount">0</span>/8</div>
     </div>
+    
+    <div class="game" id="memoryGame">
+      <!-- Cards will be generated by JavaScript -->
+    </div>
+    
+    <div class="game-controls">
+      <button onclick="resetGame()">🔄 Restart</button>
+      <button class="difficulty-btn" onclick="changeDifficulty('easy')">Easy</button>
+      <button class="difficulty-btn" onclick="changeDifficulty('medium')">Medium</button>
+      <button class="difficulty-btn" onclick="changeDifficulty('hard')">Hard</button>
+    </div>
+    
+    <div id="achievements" style="margin-top:20px;"></div>
   </div>
 </div>
 
@@ -217,118 +331,486 @@ input{
 <div class="section" id="section4">
   <div class="card">
     <h1>Our Memories 📸</h1>
-    <img src="https://picsum.photos/400/400?love1">
-    <img src="https://picsum.photos/400/400?love2">
+    <div class="gallery">
+      <img src="https://picsum.photos/400/400?love1" alt="Memory 1">
+      <img src="https://picsum.photos/400/400?love2" alt="Memory 2">
+      <img src="https://picsum.photos/400/400?love3" alt="Memory 3">
+    </div>
     <button onclick="nextGate(5)">Continue</button>
   </div>
 </div>
 
-<!-- 💌 GATE 5 -->
+<!-- 🎯 GATE 5 -->
 <div class="gate" id="gate5">
   <div class="card">
-    <h1>One Last Step 💌</h1>
-    <div class="heart" onclick="unlock5()">❤️</div>
+    <h1>Pattern Challenge 🎯</h1>
+    <p>Repeat the pattern by clicking the hearts in order</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:20px 0;">
+      <button class="pattern-btn" onclick="patternClick(1)" style="font-size:30px">💖</button>
+      <button class="pattern-btn" onclick="patternClick(2)" style="font-size:30px">💕</button>
+      <button class="pattern-btn" onclick="patternClick(3)" style="font-size:30px">💗</button>
+      <button class="pattern-btn" onclick="patternClick(4)" style="font-size:30px">💓</button>
+      <button class="pattern-btn" onclick="patternClick(5)" style="font-size:30px">💞</button>
+      <button class="pattern-btn" onclick="patternClick(6)" style="font-size:30px">💘</button>
+    </div>
+    <p id="patternLevel">Level: 1 | Sequence length: 3</p>
+    <div id="patternSequence" style="margin:15px 0;min-height:40px;"></div>
   </div>
 </div>
 
-<!-- ✉️ SECTION 5 -->
+<!-- ✨ SECTION 5 -->
 <div class="section" id="section5">
   <div class="card">
+    <h1>Special Moments ✨</h1>
+    <p>Remember when we first...</p>
+    <p>And that time we...</p>
+    <p>Every moment with you is precious.</p>
+    <button onclick="nextGate(6)">Continue</button>
+  </div>
+</div>
+
+<!-- 💌 GATE 6 -->
+<div class="gate" id="gate6">
+  <div class="card">
+    <h1>Final Challenge 💌</h1>
+    <p>Solve this love equation:</p>
+    <div style="font-size:2em;margin:20px 0;">
+      ❤️ + 🌙 + ✨ = ?
+    </div>
+    <input id="finalAnswer" placeholder="Your answer...">
+    <button onclick="checkFinal()">Submit</button>
+    <p id="hint" style="margin-top:10px;font-size:0.9em;opacity:0.7">Hint: Think of us</p>
+  </div>
+</div>
+
+<!-- ✉️ SECTION 6 -->
+<div class="section" id="section6">
+  <div class="card">
     <h1>My Message 💖</h1>
+    <div class="completion-animation">🎉</div>
     <p>
+      You've completed every challenge, just like you complete me.<br><br>
       No matter where life takes us,<br>
       my heart will always choose you,<br>
-      Iklil Irdina Binti Azhar ❤️
+      Iklil Irdina Binti Azhar ❤️<br><br>
+      Forever yours.
     </p>
+    <div style="margin-top:30px;">
+      <button onclick="playAgain()">Play Again 💕</button>
+    </div>
   </div>
 </div>
 
 <script>
-const SECRET="iklilirdinabintiazhar";
-let progress=parseInt(localStorage.getItem("progress")||0);
-let unlocked=localStorage.getItem("unlocked")==="true";
-let tap=0;
-const music=document.getElementById("music");
+const SECRET = "iklilirdinabintiazhar";
+let progress = parseInt(localStorage.getItem("progress") || 0);
+let unlocked = localStorage.getItem("unlocked") === "true";
+let tap = 0;
+let findHeartTries = 3;
+let heartPosition = Math.floor(Math.random() * 9) + 1;
+const music = document.getElementById("music");
 
 /* PASSWORD */
-function checkPassword(){
-  let input=document.getElementById("passwordInput").value
-    .toLowerCase().replace(/\s+/g,"");
-  if(input===SECRET){
-    localStorage.setItem("unlocked","true");
+function checkPassword() {
+  let input = document.getElementById("passwordInput").value
+    .toLowerCase().replace(/\s+/g, "");
+  if (input === SECRET) {
+    localStorage.setItem("unlocked", "true");
     showGate(1);
-  }else{
+  } else {
     alert("Wrong secret 😝");
   }
 }
 
 /* INIT */
-if(unlocked){
+if (unlocked) {
   document.getElementById("passwordGate").classList.remove("active");
   resume();
 }
 updateProgress();
 
-/* GATES */
-function unlock1(){
+/* GATE 1 - TAP HEART */
+function unlock1() {
   tap++;
-  if(tap>=3){
+  document.getElementById("tapCounter").textContent = `Taps: ${tap}/7`;
+  if (tap >= 7) {
     music.play();
     unlockSection(1);
   }
 }
-function unlock2(){unlockSection(2)}
-function unlock3(){unlockSection(3)}
-function unlock5(){unlockSection(5)}
 
-function unlockSection(n){
-  progress=Math.max(progress,n);
-  localStorage.setItem("progress",progress);
-  updateProgress();
-  showSection(n);
-}
-function nextGate(n){showGate(n)}
-function wrong(){alert("Try again 😝")}
-
-/* SHOW */
-function showSection(n){hideAll();document.getElementById("section"+n).classList.add("active")}
-function showGate(n){hideAll();document.getElementById("gate"+n).classList.add("active")}
-function hideAll(){document.querySelectorAll(".gate,.section").forEach(e=>e.classList.remove("active"))}
-
-/* PROGRESS */
-function updateProgress(){
-  document.getElementById("progressText").innerText=
-    `Iklil has unlocked ${progress} / 5 sections`;
-  document.getElementById("progressFill").style.width=(progress/5*100)+"%";
+/* GATE 2 - FIND HEART */
+function tryFindHeart(position) {
+  if (findHeartTries <= 0) return;
+  
+  findHeartTries--;
+  document.getElementById("triesCounter").textContent = `Tries left: ${findHeartTries}`;
+  
+  if (position === heartPosition) {
+    setTimeout(() => {
+      unlockSection(2);
+    }, 500);
+  } else if (findHeartTries <= 0) {
+    setTimeout(() => {
+      alert("Let's try again! The heart was in position " + heartPosition);
+      resetFindHeart();
+    }, 300);
+  }
 }
 
-/* RESUME */
-function resume(){
-  if(progress===0)showGate(1);
-  else showSection(progress);
+function resetFindHeart() {
+  findHeartTries = 3;
+  heartPosition = Math.floor(Math.random() * 9) + 1;
+  document.getElementById("triesCounter").textContent = `Tries left: 3`;
 }
 
-/* MEMORY GAME */
-let emojis=["❤️","❤️","💖","💖"].sort(()=>0.5-Math.random());
-let flipped=[],matched=0;
-document.querySelectorAll(".cardGame").forEach((c,i)=>c.dataset.emoji=emojis[i]);
-function flip(card){
-  if(card.textContent!=="?")return;
-  card.textContent=card.dataset.emoji;
-  flipped.push(card);
-  if(flipped.length===2){
-    if(flipped[0].dataset.emoji===flipped[1].dataset.emoji){
-      matched+=2;
-      flipped=[];
-      if(matched===4)setTimeout(()=>unlockSection(4),800);
-    }else{
-      setTimeout(()=>{
-        flipped.forEach(c=>c.textContent="?");
-        flipped=[];
-      },700);
+/* GATE 3 - QUIZ */
+let quizAnswers = [];
+let currentQuestion = 1;
+const quizQuestions = [
+  {
+    question: "What's my favorite thing about you?",
+    answers: ["Your smile", "Your kindness", "Your intelligence"],
+    correct: 0
+  },
+  {
+    question: "Where would I take you on a dream date?",
+    answers: ["Beach sunset", "Mountain hike", "City lights dinner"],
+    correct: 0
+  },
+  {
+    question: "What makes us perfect together?",
+    answers: ["We complete each other", "We laugh together", "We grow together"],
+    correct: 0
+  }
+];
+
+function answerQuiz(questionNum, answerNum) {
+  quizAnswers[questionNum-1] = answerNum;
+  
+  if (currentQuestion < 3) {
+    currentQuestion++;
+    showQuizQuestion(currentQuestion);
+  } else {
+    checkQuizAnswers();
+  }
+}
+
+function showQuizQuestion(num) {
+  const q = quizQuestions[num-1];
+  document.getElementById("quizContainer").innerHTML = `
+    <div class="question">
+      <p>${q.question}</p>
+      <button onclick="answerQuiz(${num},1)">${q.answers[0]}</button>
+      <button onclick="answerQuiz(${num},2)">${q.answers[1]}</button>
+      <button onclick="answerQuiz(${num},3)">${q.answers[2]}</button>
+    </div>
+  `;
+}
+
+function checkQuizAnswers() {
+  let correct = 0;
+  quizAnswers.forEach((answer, index) => {
+    if (answer === quizQuestions[index].correct + 1) correct++;
+  });
+  
+  if (correct >= 2) {
+    unlockSection(3);
+  } else {
+    alert("Let's try again! ❤️");
+    currentQuestion = 1;
+    quizAnswers = [];
+    showQuizQuestion(1);
+  }
+}
+
+/* 🧠 ENHANCED MEMORY GAME */
+let memoryCards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let moveCount = 0;
+let gameTimer = 0;
+let timerInterval;
+let difficulty = 'medium';
+let achievements = [];
+
+const emojiSets = {
+  easy: ["❤️", "💖", "💕", "💗", "💓", "💞", "💘", "💝"],
+  medium: ["❤️", "💖", "💕", "💗", "💓", "💞", "💘", "💝", "✨", "🌟", "🌙", "⭐"],
+  hard: ["❤️", "💖", "💕", "💗", "💓", "💞", "💘", "💝", "✨", "🌟", "🌙", "⭐", "🌹", "🌸", "🌺", "🌷"]
+};
+
+function initMemoryGame() {
+  const gameContainer = document.getElementById("memoryGame");
+  gameContainer.innerHTML = '';
+  
+  let emojis = [...emojiSets[difficulty]];
+  emojis = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+  
+  memoryCards = emojis.map((emoji, index) => ({
+    id: index,
+    emoji: emoji,
+    flipped: false,
+    matched: false
+  }));
+  
+  memoryCards.forEach(card => {
+    const cardElement = document.createElement('div');
+    cardElement.className = 'cardGame';
+    cardElement.dataset.id = card.id;
+    cardElement.dataset.emoji = card.emoji;
+    cardElement.onclick = () => flipCard(cardElement);
+    gameContainer.appendChild(cardElement);
+  });
+  
+  flippedCards = [];
+  matchedPairs = 0;
+  moveCount = 0;
+  gameTimer = 0;
+  
+  document.getElementById("moveCount").textContent = "0";
+  document.getElementById("matchedCount").textContent = "0/" + (emojis.length/2);
+  document.getElementById("timer").textContent = "0s";
+  
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    gameTimer++;
+    document.getElementById("timer").textContent = gameTimer + "s";
+  }, 1000);
+}
+
+function flipCard(cardElement) {
+  const cardId = parseInt(cardElement.dataset.id);
+  const card = memoryCards.find(c => c.id === cardId);
+  
+  if (card.flipped || card.matched || flippedCards.length >= 2) return;
+  
+  card.flipped = true;
+  cardElement.classList.add('flipped');
+  cardElement.textContent = card.emoji;
+  flippedCards.push(card);
+  
+  if (flippedCards.length === 2) {
+    moveCount++;
+    document.getElementById("moveCount").textContent = moveCount;
+    
+    if (flippedCards[0].emoji === flippedCards[1].emoji) {
+      // Match found
+      flippedCards.forEach(c => {
+        c.matched = true;
+        document.querySelector(`.cardGame[data-id="${c.id}"]`).classList.add('matched');
+      });
+      matchedPairs++;
+      document.getElementById("matchedCount").textContent = matchedPairs + "/" + (memoryCards.length/2);
+      flippedCards = [];
+      
+      checkAchievements();
+      
+      if (matchedPairs === memoryCards.length/2) {
+        clearInterval(timerInterval);
+        setTimeout(() => {
+          showAchievement("Memory Master! 🏆");
+          unlockSection(4);
+        }, 1000);
+      }
+    } else {
+      // No match
+      setTimeout(() => {
+        flippedCards.forEach(c => {
+          c.flipped = false;
+          const element = document.querySelector(`.cardGame[data-id="${c.id}"]`);
+          element.classList.remove('flipped');
+          element.textContent = '';
+        });
+        flippedCards = [];
+      }, 1000);
     }
   }
 }
+
+function resetGame() {
+  initMemoryGame();
+}
+
+function changeDifficulty(level) {
+  difficulty = level;
+  resetGame();
+}
+
+function checkAchievements() {
+  if (moveCount === 10 && !achievements.includes("efficient")) {
+    showAchievement("Efficient Matcher! ⚡");
+    achievements.push("efficient");
+  }
+  if (gameTimer < 60 && matchedPairs === memoryCards.length/2) {
+    showAchievement("Speed Demon! 🚀");
+  }
+}
+
+function showAchievement(text) {
+  const achievementDiv = document.createElement('div');
+  achievementDiv.className = 'achievement';
+  achievementDiv.textContent = "🏆 " + text;
+  document.getElementById("achievements").appendChild(achievementDiv);
+  
+  setTimeout(() => {
+    achievementDiv.remove();
+  }, 3000);
+}
+
+/* 🎯 GATE 5 - PATTERN GAME */
+let patternSequence = [];
+let playerSequence = [];
+let patternLevel = 1;
+let isShowingPattern = false;
+
+function initPatternGame() {
+  patternSequence = [];
+  playerSequence = [];
+  patternLevel = 1;
+  generatePattern();
+  showPattern();
+}
+
+function generatePattern() {
+  patternSequence = [];
+  for (let i = 0; i < 2 + patternLevel; i++) {
+    patternSequence.push(Math.floor(Math.random() * 6) + 1);
+  }
+}
+
+function showPattern() {
+  isShowingPattern = true;
+  const sequenceDiv = document.getElementById("patternSequence");
+  sequenceDiv.innerHTML = "Watch the pattern...";
+  
+  let delay = 0;
+  patternSequence.forEach((num, index) => {
+    setTimeout(() => {
+      sequenceDiv.innerHTML = `Step ${index + 1}: ${getHeartEmoji(num)}`;
+    }, delay);
+    delay += 800;
+  });
+  
+  setTimeout(() => {
+    sequenceDiv.innerHTML = "Your turn!";
+    isShowingPattern = false;
+    playerSequence = [];
+  }, delay);
+}
+
+function patternClick(num) {
+  if (isShowingPattern) return;
+  
+  playerSequence.push(num);
+  const sequenceDiv = document.getElementById("patternSequence");
+  sequenceDiv.innerHTML = `Your sequence: ${playerSequence.map(n => getHeartEmoji(n)).join(' ')}`;
+  
+  // Check if current sequence is correct
+  for (let i = 0; i < playerSequence.length; i++) {
+    if (playerSequence[i] !== patternSequence[i]) {
+      setTimeout(() => {
+        alert("Wrong pattern! Let's try again ❤️");
+        playerSequence = [];
+        showPattern();
+      }, 500);
+      return;
+    }
+  }
+  
+  // If completed sequence
+  if (playerSequence.length === patternSequence.length) {
+    if (patternLevel >= 3) {
+      setTimeout(() => {
+        unlockSection(5);
+      }, 1000);
+    } else {
+      patternLevel++;
+      document.getElementById("patternLevel").textContent = `Level: ${patternLevel} | Sequence length: ${2 + patternLevel}`;
+      setTimeout(() => {
+        generatePattern();
+        showPattern();
+      }, 1000);
+    }
+  }
+}
+
+function getHeartEmoji(num) {
+  const emojis = ["💖", "💕", "💗", "💓", "💞", "💘"];
+  return emojis[num - 1];
+}
+
+/* 💌 GATE 6 - FINAL */
+function checkFinal() {
+  const answer = document.getElementById("finalAnswer").value.toLowerCase();
+  if (answer.includes("forever") || answer.includes("love") || answer.includes("us")) {
+    unlockSection(6);
+  } else {
+    alert("Think about what we mean to each other 💕");
+  }
+}
+
+/* UTILITY FUNCTIONS */
+function unlockSection(n) {
+  progress = Math.max(progress, n);
+  localStorage.setItem("progress", progress);
+  updateProgress();
+  
+  // Initialize next game if needed
+  if (n === 4) initMemoryGame();
+  if (n === 5) initPatternGame();
+  
+  showSection(n);
+}
+
+function nextGate(n) { showGate(n); }
+function wrong() { alert("Try again 😝"); }
+
+/* SHOW/HIDE */
+function showSection(n) {
+  hideAll();
+  document.getElementById("section" + n).classList.add("active");
+}
+function showGate(n) {
+  hideAll();
+  document.getElementById("gate" + n).classList.add("active");
+}
+function hideAll() {
+  document.querySelectorAll(".gate,.section").forEach(e => e.classList.remove("active"));
+}
+
+/* PROGRESS */
+function updateProgress() {
+  document.getElementById("progressText").innerText =
+    `Iklil has unlocked ${progress} / 6 sections`;
+  document.getElementById("progressFill").style.width = (progress/6*100) + "%";
+}
+
+/* RESUME */
+function resume() {
+  if (progress === 0) showGate(1);
+  else showSection(progress);
+}
+
+/* PLAY AGAIN */
+function playAgain() {
+  localStorage.removeItem("progress");
+  localStorage.removeItem("unlocked");
+  location.reload();
+}
+
+// Initialize games when page loads
+window.onload = function() {
+  if (unlocked && progress >= 4) {
+    initMemoryGame();
+  }
+  if (unlocked && progress >= 5) {
+    initPatternGame();
+  }
+  if (unlocked && progress >= 3) {
+    showQuizQuestion(1);
+  }
+};
 </script>
 
 </body>
