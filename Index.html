@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Only For Iklil 💗</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Poppins',sans-serif}
+body{
+  background:linear-gradient(135deg,#fbc2eb,#a6c1ee);
+  min-height:100vh;
+  color:#fff;
+}
+
+/* 🌸 PROGRESS */
+#progressBox{
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
+  background:rgba(255,255,255,0.25);
+  backdrop-filter:blur(12px);
+  border-radius:20px;
+  padding:10px;
+  z-index:999;
+}
+#progressText{font-size:.85em;margin-bottom:6px}
+#progressBar{
+  height:8px;
+  background:rgba(255,255,255,.3);
+  border-radius:20px;
+  overflow:hidden;
+}
+#progressFill{
+  height:100%;
+  width:0%;
+  background:#ff5f8a;
+}
+
+/* 🌷 LAYOUT */
+.section,.gate{
+  min-height:100vh;
+  padding:90px 20px 40px;
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+.active{display:flex}
+.card{
+  width:100%;
+  max-width:420px;
+  background:rgba(255,255,255,.25);
+  backdrop-filter:blur(15px);
+  border-radius:30px;
+  padding:30px 22px;
+  text-align:center;
+  animation:fade .6s ease;
+}
+@keyframes fade{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+h1{font-size:2em;margin-bottom:10px}
+p{font-size:1.05em;margin-bottom:18px}
+button{
+  padding:14px 28px;
+  border:none;
+  border-radius:999px;
+  background:#ff5f8a;
+  color:white;
+  font-size:1em;
+  margin:6px;
+}
+input{
+  padding:14px;
+  width:100%;
+  border-radius:999px;
+  border:none;
+  text-align:center;
+  margin-bottom:12px;
+}
+
+.heart{
+  font-size:80px;
+  animation:pulse 1.2s infinite;
+}
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.2)}
+  100%{transform:scale(1)}
+}
+
+/* 🧠 MEMORY GAME */
+.game{
+  display:grid;
+  grid-template-columns:repeat(2,120px);
+  gap:12px;
+  justify-content:center;
+}
+.cardGame{
+  height:120px;
+  background:white;
+  border-radius:20px;
+  font-size:60px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#ff5f8a;
+}
+
+.gallery img{
+  width:100%;
+  border-radius:18px;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🌸 PROGRESS -->
+<div id="progressBox">
+  <div id="progressText">Iklil has unlocked 0 / 5 sections</div>
+  <div id="progressBar"><div id="progressFill"></div></div>
+</div>
+
+<!-- 🎵 MUSIC -->
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_8c1a6f1d8b.mp3">
+</audio>
+
+<!-- 🔐 PASSWORD GATE -->
+<div class="gate active" id="passwordGate">
+  <div class="card">
+    <h1>Private Access 🔒</h1>
+    <p>Only someone special knows this</p>
+    <input id="passwordInput" placeholder="Enter the secret">
+    <button onclick="checkPassword()">Unlock 💗</button>
+  </div>
+</div>
+
+<!-- 🔐 GATE 1 -->
+<div class="gate" id="gate1">
+  <div class="card">
+    <h1>Unlock My Heart 💕</h1>
+    <p>Tap the heart 3 times, Iklil</p>
+    <div class="heart" onclick="unlock1()">❤️</div>
+  </div>
+</div>
+
+<!-- 🌸 SECTION 1 -->
+<div class="section" id="section1">
+  <div class="card">
+    <h1>Hi Iklil 💖</h1>
+    <p>I made this just for you</p>
+    <button onclick="nextGate(2)">Continue</button>
+  </div>
+</div>
+
+<!-- 🔎 GATE 2 -->
+<div class="gate" id="gate2">
+  <div class="card">
+    <h1>Find My Heart 💘</h1>
+    <button onclick="wrong()">🌸</button>
+    <button onclick="unlock2()">❤️</button>
+    <button onclick="wrong()">✨</button>
+  </div>
+</div>
+
+<!-- 📖 SECTION 2 -->
+<div class="section" id="section2">
+  <div class="card">
+    <h1>How We Met ✨</h1>
+    <p>The moment I met you, everything felt right.</p>
+    <button onclick="nextGate(3)">Continue</button>
+  </div>
+</div>
+
+<!-- ❓ GATE 3 -->
+<div class="gate" id="gate3">
+  <div class="card">
+    <h1>Who Do I Love Most? 😏</h1>
+    <button onclick="wrong()">Sleep</button>
+    <button onclick="unlock3()">You ❤️</button>
+    <button onclick="wrong()">Food</button>
+  </div>
+</div>
+
+<!-- 💞 SECTION 3 -->
+<div class="section" id="section3">
+  <div class="card">
+    <h1>Why I Love You 💞</h1>
+    <p>You feel like home.</p>
+    <p>You understand me.</p>
+    <p>You choose me.</p>
+    <button onclick="nextGate(4)">Continue</button>
+  </div>
+</div>
+
+<!-- 🧠 GATE 4 -->
+<div class="gate" id="gate4">
+  <div class="card">
+    <h1>Match Our Hearts 🧠❤️</h1>
+    <div class="game">
+      <div class="cardGame" onclick="flip(this)">?</div>
+      <div class="cardGame" onclick="flip(this)">?</div>
+      <div class="cardGame" onclick="flip(this)">?</div>
+      <div class="cardGame" onclick="flip(this)">?</div>
+    </div>
+  </div>
+</div>
+
+<!-- 🖼️ SECTION 4 -->
+<div class="section" id="section4">
+  <div class="card">
+    <h1>Our Memories 📸</h1>
+    <img src="https://picsum.photos/400/400?love1">
+    <img src="https://picsum.photos/400/400?love2">
+    <button onclick="nextGate(5)">Continue</button>
+  </div>
+</div>
+
+<!-- 💌 GATE 5 -->
+<div class="gate" id="gate5">
+  <div class="card">
+    <h1>One Last Step 💌</h1>
+    <div class="heart" onclick="unlock5()">❤️</div>
+  </div>
+</div>
+
+<!-- ✉️ SECTION 5 -->
+<div class="section" id="section5">
+  <div class="card">
+    <h1>My Message 💖</h1>
+    <p>
+      No matter where life takes us,<br>
+      my heart will always choose you,<br>
+      Iklil Irdina Binti Azhar ❤️
+    </p>
+  </div>
+</div>
+
+<script>
+const SECRET="iklilirdinabintiazhar";
+let progress=parseInt(localStorage.getItem("progress")||0);
+let unlocked=localStorage.getItem("unlocked")==="true";
+let tap=0;
+const music=document.getElementById("music");
+
+/* PASSWORD */
+function checkPassword(){
+  let input=document.getElementById("passwordInput").value
+    .toLowerCase().replace(/\s+/g,"");
+  if(input===SECRET){
+    localStorage.setItem("unlocked","true");
+    showGate(1);
+  }else{
+    alert("Wrong secret 😝");
+  }
+}
+
+/* INIT */
+if(unlocked){
+  document.getElementById("passwordGate").classList.remove("active");
+  resume();
+}
+updateProgress();
+
+/* GATES */
+function unlock1(){
+  tap++;
+  if(tap>=3){
+    music.play();
+    unlockSection(1);
+  }
+}
+function unlock2(){unlockSection(2)}
+function unlock3(){unlockSection(3)}
+function unlock5(){unlockSection(5)}
+
+function unlockSection(n){
+  progress=Math.max(progress,n);
+  localStorage.setItem("progress",progress);
+  updateProgress();
+  showSection(n);
+}
+function nextGate(n){showGate(n)}
+function wrong(){alert("Try again 😝")}
+
+/* SHOW */
+function showSection(n){hideAll();document.getElementById("section"+n).classList.add("active")}
+function showGate(n){hideAll();document.getElementById("gate"+n).classList.add("active")}
+function hideAll(){document.querySelectorAll(".gate,.section").forEach(e=>e.classList.remove("active"))}
+
+/* PROGRESS */
+function updateProgress(){
+  document.getElementById("progressText").innerText=
+    `Iklil has unlocked ${progress} / 5 sections`;
+  document.getElementById("progressFill").style.width=(progress/5*100)+"%";
+}
+
+/* RESUME */
+function resume(){
+  if(progress===0)showGate(1);
+  else showSection(progress);
+}
+
+/* MEMORY GAME */
+let emojis=["❤️","❤️","💖","💖"].sort(()=>0.5-Math.random());
+let flipped=[],matched=0;
+document.querySelectorAll(".cardGame").forEach((c,i)=>c.dataset.emoji=emojis[i]);
+function flip(card){
+  if(card.textContent!=="?")return;
+  card.textContent=card.dataset.emoji;
+  flipped.push(card);
+  if(flipped.length===2){
+    if(flipped[0].dataset.emoji===flipped[1].dataset.emoji){
+      matched+=2;
+      flipped=[];
+      if(matched===4)setTimeout(()=>unlockSection(4),800);
+    }else{
+      setTimeout(()=>{
+        flipped.forEach(c=>c.textContent="?");
+        flipped=[];
+      },700);
+    }
+  }
+}
+</script>
+
+</body>
+</html>
